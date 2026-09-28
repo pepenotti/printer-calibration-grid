@@ -18,9 +18,10 @@ photo never leaves your device.
 - **Single adjustment.** One of cyan, magenta, yellow, brightness or contrast from min to
   max in steps.
 
-The **preset** (all five adjustments) is applied to every variation, and the patterns vary
-around it; the variation equal to the preset is framed. Click a variation in the preview to
-make it the new preset.
+The **preset** (a slider with an exact-value box for each of the five adjustments) is applied
+to every variation, and the patterns vary around it; the variation equal to the preset is
+framed. Click a variation in the preview to make it the new preset; double-click a slider
+to put it back to 0.
 
 ## Printing
 

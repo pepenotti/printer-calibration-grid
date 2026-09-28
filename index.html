@@ -84,15 +84,29 @@
 
       <fieldset>
         <legend>Preset</legend>
-        <p class="hint">Every variation starts from these values. Click a variation in the preview to make it the preset.</p>
-        <div class="number-grid">
-          <label><span><i class="swatch" data-ink="cyan"></i>Cyan</span><input type="number" name="cyan" value="0" min="-100" max="100" step="1"></label>
-          <label><span><i class="swatch" data-ink="magenta"></i>Magenta</span><input type="number" name="magenta" value="0" min="-100" max="100" step="1"></label>
-          <label><span><i class="swatch" data-ink="yellow"></i>Yellow</span><input type="number" name="yellow" value="0" min="-100" max="100" step="1"></label>
-          <label>Brightness <input type="number" name="brightness" value="0" min="-100" max="100" step="1"></label>
-          <label>Contrast <input type="number" name="contrast" value="0" min="-100" max="100" step="1"></label>
-          <button type="button" id="reset-preset" class="quiet">Reset to 0</button>
+        <p class="hint">Every variation starts from these values. Click a variation in the preview to make it the preset; double-click a slider to put it back to 0.</p>
+        <div class="sliders">
+          <label for="cyan-slider"><i class="swatch" data-ink="cyan"></i>Cyan</label>
+          <input id="cyan-slider" class="slider" type="range" min="-100" max="100" step="1" value="0" data-for="cyan">
+          <input type="number" name="cyan" value="0" min="-100" max="100" step="1" aria-label="Cyan value">
+
+          <label for="magenta-slider"><i class="swatch" data-ink="magenta"></i>Magenta</label>
+          <input id="magenta-slider" class="slider" type="range" min="-100" max="100" step="1" value="0" data-for="magenta">
+          <input type="number" name="magenta" value="0" min="-100" max="100" step="1" aria-label="Magenta value">
+
+          <label for="yellow-slider"><i class="swatch" data-ink="yellow"></i>Yellow</label>
+          <input id="yellow-slider" class="slider" type="range" min="-100" max="100" step="1" value="0" data-for="yellow">
+          <input type="number" name="yellow" value="0" min="-100" max="100" step="1" aria-label="Yellow value">
+
+          <label for="brightness-slider">Brightness</label>
+          <input id="brightness-slider" class="slider" type="range" min="-100" max="100" step="1" value="0" data-for="brightness">
+          <input type="number" name="brightness" value="0" min="-100" max="100" step="1" aria-label="Brightness value">
+
+          <label for="contrast-slider">Contrast</label>
+          <input id="contrast-slider" class="slider" type="range" min="-100" max="100" step="1" value="0" data-for="contrast">
+          <input type="number" name="contrast" value="0" min="-100" max="100" step="1" aria-label="Contrast value">
         </div>
+        <button type="button" id="reset-preset" class="quiet reset">Reset all to 0</button>
       </fieldset>
 
       <fieldset>

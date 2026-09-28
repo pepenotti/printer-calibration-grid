@@ -130,8 +130,50 @@ fieldset > .hint { margin-bottom: 10px; }
 
 .number-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; align-items: end; }
 .number-grid label { display: grid; gap: 4px; font-size: 0.85rem; color: var(--muted); }
-.number-grid label > span { display: inline-flex; align-items: center; gap: 6px; }
 button.quiet { padding: 8px 10px; font-weight: 500; font-size: 0.85rem; }
+
+/* Preset: a slider and an exact-value box per adjustment. The color tracks run from the
+   complementary color (less ink) to the ink itself (more ink); the tick marks 0. */
+.sliders {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) 4.5rem;
+  align-items: center;
+  gap: 8px 12px;
+}
+.sliders label { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--muted); }
+.sliders input[type="number"] { padding: 5px 8px; text-align: right; }
+button.reset { margin-top: 12px; }
+
+.slider {
+  --track: var(--line);
+  --tick: linear-gradient(to right, transparent calc(50% - 1px), var(--muted) calc(50% - 1px), var(--muted) calc(50% + 1px), transparent calc(50% + 1px));
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 24px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.slider[data-for="cyan"] { --track: linear-gradient(to right, #d0544c, var(--control), #1f9fd4); }
+.slider[data-for="magenta"] { --track: linear-gradient(to right, #3fa45f, var(--control), #d23c8e); }
+.slider[data-for="yellow"] { --track: linear-gradient(to right, #3d6ad4, var(--control), #e8c400); }
+.slider[data-for="brightness"] { --track: linear-gradient(to right, #2a2a2a, #d9d9d9); }
+.slider::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: var(--tick), var(--track); }
+.slider::-moz-range-track { height: 6px; border-radius: 3px; background: var(--tick), var(--track); }
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -6px;
+  border: 2px solid var(--text);
+  border-radius: 50%;
+  background: var(--panel);
+}
+.slider::-moz-range-thumb { width: 14px; height: 14px; border: 2px solid var(--text); border-radius: 50%; background: var(--panel); }
+.slider:focus-visible { outline: none; }
+.slider:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--text); }
+.slider:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--text); }
 input[type="number"] {
   width: 100%;
   min-width: 0;

@@ -1,6 +1,6 @@
 // UI wiring: read the form, build the pattern, render the sheet, download or print it.
 
-import { AXES, formatValue } from './adjust.js';
+import { AXES, formatValue, NEUTRAL } from './adjust.js';
 import { PAPERS } from './layout.js';
 import { buildPattern, describeSettings } from './patterns.js';
 import { exportPng, loadImage, renderSheet } from './render.js';
@@ -18,6 +18,8 @@ const downloadButton = document.querySelector('#download');
 const printButton = document.querySelector('#print');
 const resetButton = document.querySelector('#reset-preset');
 const pageRule = document.querySelector('#page-rule');
+// Preset sliders by adjustment. The number boxes next to them hold the value the form reads.
+const sliders = Object.fromEntries([...form.querySelectorAll('.slider')].map((s) => [s.dataset.for, s]));
 
 let photo = null; // { image, name }
 let shown = null; // { pattern, layout } of the sheet on screen
@@ -81,9 +83,19 @@ function describe(pattern, { pattern: kind, preset, strip }) {
   return `${count}: ${list}${missing ? ` · your preset (${formatValue(value)}) is not on this sheet` : ''}`;
 }
 
-function scheduleRender() {
+// Typing waits for a pause. Dragging a slider keeps re-rendering while it moves: a render that
+// is already queued is kept, because it reads the latest values when it runs.
+function scheduleRender({ live = false } = {}) {
+  if (live && renderTimer) return;
   clearTimeout(renderTimer);
-  renderTimer = setTimeout(render, 120);
+  renderTimer = setTimeout(render, live ? 60 : 120);
+}
+
+function setPreset(values) {
+  for (const axis of AXES) {
+    fields[axis].value = String(values[axis]);
+    sliders[axis].value = String(values[axis]);
+  }
 }
 
 // Catch up on a pending re-render so downloads and prints always match the form.
@@ -174,20 +186,35 @@ function pickVariation(event) {
   const index = cells.findIndex((c) => x >= c.x && x <= c.x + c.width && y >= c.y && y <= c.y + c.height + band);
   if (index === -1) return;
   const picked = shown.pattern.cells[index].settings;
-  for (const axis of AXES) fields[axis].value = String(picked[axis]);
+  setPreset(picked);
   render();
   showMessage(`Preset: ${describeSettings(picked)}`);
 }
 
 form.addEventListener('submit', (event) => event.preventDefault());
-form.addEventListener('input', (event) => {
-  if (event.target !== fields.photo) scheduleRender();
+form.addEventListener('input', ({ target }) => {
+  if (target === fields.photo) return;
+  if (target.classList.contains('slider')) {
+    fields[target.dataset.for].value = target.value;
+    scheduleRender({ live: true });
+    return;
+  }
+  // A typed preset moves its slider too; invalid entries stay in the box and show an error.
+  if (sliders[target.name] && Number.isFinite(target.valueAsNumber)) sliders[target.name].value = target.value;
+  scheduleRender();
 });
 fields.photo.addEventListener('change', () => openFile(fields.photo.files[0]));
 resetButton.addEventListener('click', () => {
-  for (const axis of AXES) fields[axis].value = '0';
+  setPreset(NEUTRAL);
   render();
 });
+for (const [axis, slider] of Object.entries(sliders)) {
+  slider.addEventListener('dblclick', () => {
+    slider.value = '0';
+    fields[axis].value = '0';
+    render();
+  });
+}
 sheet.addEventListener('click', pickVariation);
 downloadButton.addEventListener('click', download);
 printButton.addEventListener('click', printSheet);
