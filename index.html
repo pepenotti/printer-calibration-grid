@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Printer Calibration Grid</title>
+  <meta name="description" content="Print one sheet of your photo in labeled color variations, like a printer driver's pattern print, and pick the one that matches your screen.">
+  <meta name="color-scheme" content="light dark">
+  <!-- The page may not send anything anywhere, so the photo provably stays on the device. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' blob: data:; style-src 'self' 'unsafe-inline'; connect-src 'none'; form-action 'none'; base-uri 'none'">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <style id="page-rule">@page { size: A4 portrait; margin: 0; }</style>
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <main class="workspace">
+    <header class="intro">
+      <h1>Printer Calibration Grid</h1>
+      <p>Print one sheet of your photo in labeled variations, hold it next to your screen, and find the settings that make your prints match.</p>
+    </header>
+
+    <form id="controls" class="controls" data-pattern="hexagon" novalidate>
+      <label id="drop-zone" class="drop-zone">
+        <input type="file" name="photo" accept="image/*">
+        <span class="drop-title">Drop a photo here or <span class="link">choose a file</span></span>
+        <span id="file-name" class="file-name">JPEG, PNG or WebP. Pick one you know well on screen.</span>
+      </label>
+
+      <fieldset>
+        <legend>Pattern</legend>
+        <div class="segmented">
+          <label><input type="radio" name="pattern" value="hexagon" checked><span>Color balance</span></label>
+          <label><input type="radio" name="pattern" value="grid"><span>Brightness × contrast</span></label>
+          <label><input type="radio" name="pattern" value="strip"><span>Single adjustment</span></label>
+        </div>
+
+        <div class="options" data-for="hexagon">
+          <p class="hint">Cyan, magenta and yellow shift around the preset, as in Canon’s pattern print: yellow up, blue down, green and cyan left, red and magenta right.</p>
+          <div class="option-row">
+            <div class="field">
+              <span class="field-name" id="rings-name">Variations</span>
+              <div class="segmented" role="radiogroup" aria-labelledby="rings-name">
+                <label><input type="radio" name="rings" value="1"><span>7</span></label>
+                <label><input type="radio" name="rings" value="2" checked><span>19</span></label>
+                <label><input type="radio" name="rings" value="3"><span>37</span></label>
+              </div>
+            </div>
+            <label class="field step">Step <input type="number" name="hexStep" value="5" min="1" max="50" step="1"></label>
+          </div>
+        </div>
+
+        <div class="options" data-for="grid">
+          <p class="hint">Brightness changes across and contrast changes down, around the preset. Cyan, magenta and yellow stay at their preset values.</p>
+          <div class="option-row">
+            <div class="field">
+              <span class="field-name" id="grid-name">Grid</span>
+              <div class="segmented" role="radiogroup" aria-labelledby="grid-name">
+                <label><input type="radio" name="gridSize" value="3" checked><span>3 × 3</span></label>
+                <label><input type="radio" name="gridSize" value="5"><span>5 × 5</span></label>
+                <label><input type="radio" name="gridSize" value="7"><span>7 × 7</span></label>
+              </div>
+            </div>
+            <label class="field step">Step <input type="number" name="gridStep" value="10" min="1" max="100" step="1"></label>
+          </div>
+        </div>
+
+        <div class="options" data-for="strip">
+          <p class="hint">One adjustment from min to max; the other four stay at their preset values.</p>
+          <div class="segmented" role="radiogroup" aria-label="Adjustment">
+            <label><input type="radio" name="axis" value="cyan" checked><span><i class="swatch" data-ink="cyan"></i>Cyan</span></label>
+            <label><input type="radio" name="axis" value="magenta"><span><i class="swatch" data-ink="magenta"></i>Magenta</span></label>
+            <label><input type="radio" name="axis" value="yellow"><span><i class="swatch" data-ink="yellow"></i>Yellow</span></label>
+            <label><input type="radio" name="axis" value="brightness"><span>Brightness</span></label>
+            <label><input type="radio" name="axis" value="contrast"><span>Contrast</span></label>
+          </div>
+          <div class="number-grid">
+            <label>Min <input type="number" name="min" value="-20" min="-100" max="100" step="1"></label>
+            <label>Max <input type="number" name="max" value="20" min="-100" max="100" step="1"></label>
+            <label>Step <input type="number" name="step" value="10" min="1" max="200" step="1"></label>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Preset</legend>
+        <p class="hint">Every variation starts from these values. Click a variation in the preview to make it the preset.</p>
+        <div class="number-grid">
+          <label><span><i class="swatch" data-ink="cyan"></i>Cyan</span><input type="number" name="cyan" value="0" min="-100" max="100" step="1"></label>
+          <label><span><i class="swatch" data-ink="magenta"></i>Magenta</span><input type="number" name="magenta" value="0" min="-100" max="100" step="1"></label>
+          <label><span><i class="swatch" data-ink="yellow"></i>Yellow</span><input type="number" name="yellow" value="0" min="-100" max="100" step="1"></label>
+          <label>Brightness <input type="number" name="brightness" value="0" min="-100" max="100" step="1"></label>
+          <label>Contrast <input type="number" name="contrast" value="0" min="-100" max="100" step="1"></label>
+          <button type="button" id="reset-preset" class="quiet">Reset to 0</button>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Paper</legend>
+        <div class="segmented">
+          <label><input type="radio" name="paper" value="a4" checked><span>A4</span></label>
+          <label><input type="radio" name="paper" value="letter"><span>US Letter</span></label>
+        </div>
+      </fieldset>
+
+      <div class="action-bar">
+        <div class="status">
+          <p id="summary" class="summary"></p>
+          <p id="message" class="message" role="status" aria-live="polite"></p>
+        </div>
+        <div class="actions">
+          <button type="button" id="download" class="primary" disabled>Download PNG</button>
+          <button type="button" id="print" disabled>Print…</button>
+        </div>
+      </div>
+    </form>
+
+    <section id="preview" class="preview" data-paper="a4" aria-label="Sheet preview">
+      <div class="placeholder">Your sheet appears here</div>
+      <canvas id="sheet" hidden></canvas>
+      <img id="print-image" alt="Calibration sheet">
+    </section>
+
+    <section class="help" aria-labelledby="help-title">
+      <h2 id="help-title">How to use it</h2>
+      <ol>
+        <li>Start with <strong>Color balance</strong> and the preset at 0.</li>
+        <li>Download the PNG, open it in Preview, choose File › Print and set <strong>Scale to 100%</strong>. Use the paper and quality you print photos with, and leave the printer’s own color adjustments at their defaults so the sheet’s values are the whole correction.</li>
+        <li>Hold the print next to the original photo on your screen and find the variation that matches it best. Its label is your correction.</li>
+        <li>Click that variation in the preview to make it the preset, lower the step, and print again to fine-tune. Then do the same with <strong>Brightness × contrast</strong>.</li>
+      </ol>
+      <details>
+        <summary>How the adjustments are computed</summary>
+        <dl>
+          <dt>Cyan, magenta, yellow</dt>
+          <dd>Each ink absorbs one light primary: cyan takes away red, magenta green, yellow blue. The sheet bends that channel’s tone curve, <code>c′ = 255 · (c / 255)<sup>γ</sup></code> with <code>γ = log₂(2 / (1 − v/100))</code>, so a 50% tone gets exactly v% more ink (or less, for negative values). Paper white and solid black never change. To repeat a value in an image editor, set that channel’s Levels midtone to <code>1/γ</code>: Magenta +10 is 0.87 on green.</dd>
+          <dt>Color balance pattern</dt>
+          <dd>Each step toward a color adds that ink and takes half as much from the other two (yellow: C −5, M −5, Y +10 at step 5), so the overall density stays the same. With step 5 the 19 variations use the same values as Canon’s pattern print.</dd>
+          <dt>Brightness</dt>
+          <dd>Every channel is multiplied by <code>1 + v/100</code>, like Pillow’s <code>ImageEnhance.Brightness</code>. Positive values clip the brightest tones to white; negative values turn white gray.</dd>
+          <dt>Contrast</dt>
+          <dd>Every channel moves away from (or toward) the photo’s mean luminance by <code>1 + v/100</code>, like Pillow’s <code>ImageEnhance.Contrast</code>.</dd>
+        </dl>
+        <p>When several adjustments are set, contrast is applied first, then brightness, then the ink curves, the same order as the Gutenprint printer driver. Results are rounded once and clamped to 0–255. The sheet is 2480 × 3508 px (A4) or 2550 × 3300 px (Letter), portrait or landscape, whichever shows the photos larger, saved at 300 DPI in sRGB.</p>
+      </details>
+      <p class="privacy">Your photo stays on your device: everything runs in this browser tab. <a href="https://github.com/pepenotti/printer-calibration-grid">Source on GitHub</a></p>
+    </section>
+  </main>
+</body>
+</html>

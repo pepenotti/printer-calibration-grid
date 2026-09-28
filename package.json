@@ -1,0 +1,11 @@
+{
+  "name": "printer-calibration-grid",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static web app that prints a labeled grid of color variations of a photo to calibrate a printer.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "start": "python3 -m http.server 8000"
+  }
+}
